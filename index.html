@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Chau Button</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="site-title">ちゃうボタン</div>
+    </header>
+    <nav class="tab-container">
+        <button class="tab-button" data-tab="voice-list">ボイス一覧</button>
+        <button class="tab-button" data-tab="genre-list">ジャンル別</button>
+        <button class="tab-button" data-tab="asobi-list">ちゃうメーカー</button>
+        <button class="tab-button" data-tab="kirinuki-list">切抜き元一覧</button>
+        <button class="tab-button" data-tab="link-list">各リンク</button>
+    </nav>
+    <main>
+        <div id="voice-list" class="tab-content">
+            <h1>ボイス一覧</h1>
+            <div id="voice-list-buttons"></div>
+        </div>
+        <div id="genre-list" class="tab-content">
+            <h1>ジャンル別</h1>
+            <div class="genre-container">
+                <div class="genre-buttons">
+                    <!-- ジャンルボタンがJavaScriptで動的に追加されます -->
+                </div>
+                <div class="genre-content">
+                    <!-- ジャンル別のボイスコンテンツがJavaScriptで動的に追加されます -->
+                </div>
+            </div>
+        </div>
+        <div id="asobi-list" class="tab-content">
+            <h1>ちゃうメーカー</h1>
+        </div>
+        <div id="kirinuki-list" class="tab-content">
+            <h1>切抜き元一覧</h1>
+        </div>
+        <div id="link-list" class="tab-content">
+            <h1>雪兎ちゃう 各リンク</h1>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
