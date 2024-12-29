@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendedElement.innerHTML = `
                 <h2>オススメ！！（先行抽選 2024/12/31 23:59 まで！）</h2>
                 <a href="https://yukitochau-firststep.studio.site/" target="_blank">（特設サイト）個人VTuber雪兎ちゃう1stオフラインイベント「First Step in the CINEMA」</a>
+                <a href="https://x.com/hashtag/%E5%8A%87%E5%A0%B4%E7%89%88%E9%9B%AA%E5%85%8E%E3%81%A1%E3%82%83%E3%81%86" target="_blank">#劇場版雪兎ちゃう</a>
             `;
             recommendedSection.appendChild(recommendedElement);
 

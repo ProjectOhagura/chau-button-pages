@@ -573,6 +573,7 @@ header {
     border-radius: 5px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px 0; /* リンク間のマージンを追加 */
 }
 
 .highlighted-recommendation a:hover {
