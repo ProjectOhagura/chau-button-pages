@@ -97,10 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // 各リンクタブの内容をセットアップ
             const linkListContainer = document.getElementById('link-list');
             const links = [
-                { title: '規約', url: 'http://lit.link/yukitochau' },
-                { title: 'YouTube', url: 'https://t.co/hEKcXel53p' },
+                { title: '規約（lit link）', url: 'http://lit.link/yukitochau' },
+                { title: 'YouTube（大体朝５時から！）', url: 'https://t.co/hEKcXel53p' },
                 { title: 'Twitch', url: 'https://www.twitch.tv/yukitochau' },
-                { title: 'X', url: 'https://x.com/YUKITOCHAU' }
+                { title: 'X（旧Twitter）', url: 'https://x.com/YUKITOCHAU' }
             ];
             const hashtags = [
                 { title: 'FA', tag: '#ゆきと描いちゃう' },
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendedElement.className = 'highlighted-recommendation';
             recommendedElement.innerHTML = `
                 <h2>オススメ！！（先行抽選 2024/12/31 23:59 まで！）</h2>
-                <a href="https://yukitochau-firststep.studio.site/" target="_blank">個人VTuber雪兎ちゃう1stオフラインイベント「First Step in the CINEMA」</a>
+                <a href="https://yukitochau-firststep.studio.site/" target="_blank">（特設サイト）個人VTuber雪兎ちゃう1stオフラインイベント「First Step in the CINEMA」</a>
             `;
             recommendedSection.appendChild(recommendedElement);
 
