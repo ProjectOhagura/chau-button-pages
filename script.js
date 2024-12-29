@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkListContainer = document.getElementById('link-list');
             const links = [
                 { title: '規約（lit link）', url: 'http://lit.link/yukitochau' },
-                { title: 'YouTube（大体朝５時から！）', url: 'https://t.co/hEKcXel53p' },
+                { title: 'YouTube（朝５時から！）', url: 'https://t.co/hEKcXel53p' },
                 { title: 'Twitch', url: 'https://www.twitch.tv/yukitochau' },
                 { title: 'X（旧Twitter）', url: 'https://x.com/YUKITOCHAU' }
             ];
