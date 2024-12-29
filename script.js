@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displaySelectedVoices(selectedVoices);
             });
 
-            // アタマ、結び、オチから各1つずつ選択する処理
+           /*  // アタマ、結び、オチから各1つずつ選択する処理
             document.getElementById('attribute-select').addEventListener('click', () => {
                 const attributes = ['アタマ', '結び', 'オチ'];
                 const selectedVoices = attributes.map(attr => {
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return voices[Math.floor(Math.random() * voices.length)];
                 });
                 displaySelectedVoices(selectedVoices);
-            });
+            }); */
 
             // 選択した音源を表示する関数
             const displaySelectedVoices = (voices) => {
