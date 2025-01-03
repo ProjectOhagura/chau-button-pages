@@ -125,6 +125,7 @@ header {
     min-height: 40px; /* 最小高さを設定 */
     max-height: 50px; 
     box-sizing: border-box; /* パディングがサイズに影響を与えないように */
+    transition: transform 0.1s ease, background-color 0.3s ease;
 }
 
 .button:hover {
@@ -581,4 +582,25 @@ header {
     color: #002171; /* より濃い青 */
     transform: translateY(-5px); /* 浮き上がる効果 */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+.button:active {
+    transform: scale(0.95); /* クリックしたときにボタンが少し小さくなる */
+    background-color: #ff1493; /* クリック時の一時的な背景色変更 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* クリック時の影の強調 */
+}
+
+/* ちゃうメーカーのボタンも同様の効果 */
+#asobi-list button:active {
+    transform: scale(0.95);
+    background-color: #ff1493;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ジャンルボタンも同様の効果 */
+.genre-button:active {
+    transform: scale(0.95);
+    background-color: #a5d6a7; /* ジャンルボタン用に調整 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }

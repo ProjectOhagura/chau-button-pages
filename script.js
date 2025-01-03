@@ -17,12 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.textContent = item.name;
                 button.className = 'button';
                 button.onclick = () => { 
-                    const audio = new Audio(item.file);
-                    handlePlayAnimation(button, audio);
-                    audio.play().catch(e => console.error('再生エラー:', e));
+                    playAudio(item, button);  // 再生関数を呼び出す
                 };
                 container.appendChild(button);
             };
+        
 
             const sortBy五十音 = (a, b) => a.kana.localeCompare(b.kana, 'ja-JP');
 
@@ -31,50 +30,48 @@ document.addEventListener('DOMContentLoaded', () => {
             let sortedVoices = [...voiceData].sort(sortBy五十音);
             sortedVoices.forEach(item => createButton(item, voiceListContainer));
 
-    // ジャンル別タブの内容をセットアップ
-    const genreListContainer = document.getElementById('genre-list');
-    const genreButtonsContainer = document.querySelector('.genre-buttons');
-    const genreContent = document.querySelector('.genre-content');
+            // ジャンル別タブの内容をセットアップ
+            const genreListContainer = document.getElementById('genre-list');
+            const genreButtonsContainer = document.querySelector('.genre-buttons');
+            const genreContent = document.querySelector('.genre-content');
 
-    const genres = [...new Set(voiceData.map(item => item.genre))];
-    
-    // ジャンルボタンを追加
-    genres.forEach(genre => {
-        const button = document.createElement('button');
-        button.textContent = genre;
-        button.className = 'genre-button';
-        button.addEventListener('click', function() {
-            showGenreContent(genre);
-            // 他のジャンルボタンのactiveクラスを削除
-            document.querySelectorAll('.genre-button.active').forEach(btn => {
-                btn.classList.remove('active');
+            const genres = [...new Set(voiceData.map(item => item.genre))];
+            
+            // ジャンルボタンを追加
+            genres.forEach(genre => {
+                const button = document.createElement('button');
+                button.textContent = genre;
+                button.className = 'genre-button';
+                button.addEventListener('click', function() {
+                    showGenreContent(genre);
+                    // 他のジャンルボタンのactiveクラスを削除
+                    document.querySelectorAll('.genre-button.active').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // クリックしたジャンルボタンにactiveクラスを追加
+                    this.classList.add('active');
+                });
+                genreButtonsContainer.appendChild(button);
             });
-            // クリックしたジャンルボタンにactiveクラスを追加
-            this.classList.add('active');
-        });
-        genreButtonsContainer.appendChild(button);
-    });
 
-    // 最初のジャンルをデフォルトで表示
-    if (genres.length > 0) {
-        showGenreContent(genres[0]);
-        document.querySelector('.genre-button').classList.add('active');
-    }
+            // 最初のジャンルをデフォルトで表示
+            if (genres.length > 0) {
+                showGenreContent(genres[0]);
+                document.querySelector('.genre-button').classList.add('active');
+            }
 
-    function showGenreContent(selectedGenre) {
-        genreContent.innerHTML = '';
-        voiceData.filter(item => item.genre === selectedGenre).sort(sortBy五十音).forEach(item => {
-            const button = document.createElement('button');
-            button.textContent = item.name;
-            button.className = 'button';
-            button.onclick = () => { 
-                const audio = new Audio(item.file);
-                handlePlayAnimation(button, audio);
-                audio.play().catch(e => console.error('再生エラー:', e));
-            };
-            genreContent.appendChild(button);
-        });
-    }
+            function showGenreContent(selectedGenre) {
+                genreContent.innerHTML = '';
+                voiceData.filter(item => item.genre === selectedGenre).sort(sortBy五十音).forEach(item => {
+                    const button = document.createElement('button');
+                    button.textContent = item.name;
+                    button.className = 'button';
+                    button.onclick = () => { 
+                        playAudio(item, button);
+                    };
+                    genreContent.appendChild(button);
+                });
+            }
 
             // 切り抜き元一覧タブの内容をセットアップ
             const kirinukiListContainer = document.getElementById('kirinuki-list');
@@ -165,21 +162,52 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedVoicesContainer.id = 'selected-voices';
             asobiListContainer.appendChild(selectedVoicesContainer);
 
+            let isPlayingSequence = false; // 連続再生中かどうかを追跡するフラグ
             const playAudioSequence = (audios) => {
+                isPlayingSequence = true; // 連続再生が始まったことを示す
+                disableButtons(true); // 他のボタンを無効化
+                
                 let audioIndex = 0;
                 const playNext = () => {
                     if (audioIndex < audios.length) {
-                        const audio = new Audio(audios[audioIndex].file);
+                        const audioFile = audios[audioIndex].file;
                         const currentVoiceItem = Array.from(selectedVoicesContainer.children).find(child => child.textContent === audios[audioIndex].name);
-                        // 再生中の音源のアニメーションを適用
-                        handlePlayAnimation(currentVoiceItem, audio);
-                        audio.addEventListener('ended', playNext);
-                        audio.play();
-                        audioIndex++;
+                        
+                        // 既存の再生が同じ音源で、再び同じ音源を再生しようとする場合
+                        if (currentVoiceItem.audio && currentVoiceItem.audio.src === new URL(audioFile, window.location.origin).href) {
+                            currentVoiceItem.audio.pause();
+                            currentVoiceItem.audio.currentTime = 0;
+                            currentVoiceItem.audio.play().catch(e => console.error('再生エラー:', e));
+                        } else {
+                            if (currentVoiceItem.audio) {
+                                currentVoiceItem.audio.pause(); // 異なる音源の場合は停止
+                            }
+                            const audio = new Audio(audioFile);
+                            audio.play().catch(e => console.error('再生エラー:', e));
+                            currentVoiceItem.audio = audio;
+                            
+                            audio.addEventListener('ended', () => {
+                                delete currentVoiceItem.audio;
+                                if (currentVoiceItem.hasAttribute('data-playing')) {
+                                    currentVoiceItem.removeAttribute('data-playing');
+                                    currentVoiceItem.classList.remove('playing');
+                                }
+                                audioIndex++;
+                                playNext(); // 次の音源を再生
+                            });
+                        }
+        
+                        currentVoiceItem.setAttribute('data-playing', 'true');
+                        currentVoiceItem.classList.add('playing');
+                    } else {
+                        isPlayingSequence = false; // 連続再生が終了したことを示す
+                        disableButtons(false); // 他のボタンを再び有効化
                     }
                 };
                 playNext();
             };
+            
+
 
             // ランダム選択の処理
             document.getElementById('random-select').addEventListener('click', () => {
@@ -203,39 +231,129 @@ document.addEventListener('DOMContentLoaded', () => {
                 displaySelectedVoices(selectedVoices);
             }); */
 
-            // 選択した音源を表示する関数
-            const displaySelectedVoices = (voices) => {
-                selectedVoicesContainer.innerHTML = '';
-                voices.forEach((voice, index) => {
-                    const voiceItem = document.createElement('div');
-                    voiceItem.textContent = voice.name;
-                    voiceItem.className = 'voice-item';
-                    voiceItem.setAttribute('data-order', index + 1); // 順番を属性に追加
-                    voiceItem.addEventListener('click', () => {
-                        const audio = new Audio(voice.file);
-                        // 個別再生時のアニメーション
+    // ボタンの有効/無効を制御する関数を更新
+    const disableButtons = (disable) => {
+        document.querySelectorAll('.voice-item, .button, #random-select, #attribute-select, #play-selected').forEach(button => {
+            button.disabled = disable;
+            if (disable) {
+                button.style.pointerEvents = 'none';
+               /* button.style.opacity = '0.5'; // 無効化されたボタンの透明度を下げる  */
+            } else {
+                button.style.pointerEvents = 'auto';
+               /* button.style.opacity = '1'; */
+            }
+        });
+    };
+        
+    // 選択した音源を表示する関数
+    const displaySelectedVoices = (voices) => {
+        selectedVoicesContainer.innerHTML = '';
+        voices.forEach((voice, index) => {
+            const voiceItem = document.createElement('div');
+            voiceItem.textContent = voice.name;
+            voiceItem.className = 'voice-item';
+            voiceItem.setAttribute('data-order', index + 1);
+            voiceItem.addEventListener('click', () => {
+                if (!isPlayingSequence) { // 連続再生中でない場合のみ再生を許可
+                    const audio = new Audio(voice.file);
+                    if (voiceItem.audio && voiceItem.audio.src === new URL(voice.file, window.location.origin).href) {
+                        voiceItem.audio.pause();
+                        voiceItem.audio.currentTime = 0;
+                        voiceItem.audio.play().catch(e => console.error('再生エラー:', e));
+                    } else {
+                        if (voiceItem.audio) {
+                            voiceItem.audio.pause(); // 異なる音源の場合は停止
+                        }
                         handlePlayAnimation(voiceItem, audio);
                         audio.play().catch(e => console.error('再生エラー:', e));
-                    });
-                    selectedVoicesContainer.appendChild(voiceItem);
-                });
-                playButton.disabled = false; // 音源が選択されたら再生ボタンを有効に
-            };
-
-            // 再生ボタンのイベントリスナー
-            document.getElementById('play-selected').addEventListener('click', () => {
-                const audios = Array.from(selectedVoicesContainer.children).map(child => {
-                    return { name: child.textContent, file: voiceData.find(v => v.name === child.textContent).file };
-                });
-                playAudioSequence(audios);
+                        voiceItem.audio = audio;
+                    }
+                }
             });
+            selectedVoicesContainer.appendChild(voiceItem);
+        });
+        playButton.disabled = false;
+    };
+
+    // 再生ボタンのイベントリスナー
+    document.getElementById('play-selected').addEventListener('click', () => {
+        if (!isPlayingSequence) { // 連続再生中でなければ新しい再生を開始
+            const audios = Array.from(selectedVoicesContainer.children).map(child => {
+                return { name: child.textContent, file: voiceData.find(v => v.name === child.textContent).file };
+            });
+            playAudioSequence(audios);
+        }
+    });
+
+            // ボタンの再生機能を更新
+            const playAudio = (item, button) => {
+                const currentUrl = new URL(item.file, window.location.origin).href;
+                
+                // 既に再生中の音源がある場合、同じ音源かどうかをチェック
+                if (button.audio && button.audio.src === currentUrl) {
+                    // 同じ音源なら停止して再度再生
+                    button.audio.pause();
+                    button.audio.currentTime = 0;
+                    button.audio.play().catch(e => console.error('再生エラー:', e));
+                } else {
+                    // 異なる音源または再生中の音源がない場合、新しい再生を開始
+                    if (button.audio) {
+                        button.audio.pause(); // 既存の再生を停止
+                    }
+                    const audio = new Audio(item.file);
+                    audio.play().catch(e => console.error('再生エラー:', e));
+                    
+                    // 再生中の音源をボタンに関連付け
+                    button.audio = audio;
+                    
+                    // 再生が終了したら関連付けを解除
+                    audio.addEventListener('ended', () => {
+                        delete button.audio; // 再生が終わったら関連付けを解除
+                        if (button.hasAttribute('data-playing')) {
+                            button.removeAttribute('data-playing');
+                            button.classList.remove('playing');
+                        }
+                    });
+        
+                    button.setAttribute('data-playing', 'true'); // 再生中であることを示す属性を追加
+                    button.classList.add('playing'); // アニメーションスタート
+                }
+            };
+        
 
             // アニメーションを管理する関数
             const handlePlayAnimation = (element, audio) => {
-                element.classList.add('playing');
-                audio.addEventListener('ended', () => {
-                    element.classList.remove('playing');
-                });
+                const currentUrl = new URL(audio.src, window.location.origin).href;
+                
+                if (element.audio && element.audio.src === currentUrl) {
+                    // 同じ音源なら停止して再度再生
+                    element.audio.pause();
+                    element.audio.currentTime = 0;
+                    element.audio.play().catch(e => console.error('再生エラー:', e));
+                } else {
+                    // 異なる音源または再生中の音源がない場合、新しい再生を開始
+                    if (element.audio) {
+                        element.audio.pause(); // 既存の再生を停止
+                    }
+                    audio.play().catch(e => console.error('再生エラー:', e));
+                    
+                    element.audio = audio;
+                    
+                    audio.addEventListener('ended', () => {
+                        delete element.audio;
+                        if (element.hasAttribute('data-playing')) {
+                            element.removeAttribute('data-playing');
+                            element.classList.remove('playing');
+                        }
+                    });
+        
+                    element.setAttribute('data-playing', 'true');
+                    element.classList.add('playing');
+                    audio.addEventListener('ended', () => {
+                        element.removeAttribute('data-playing');
+                        element.classList.remove('playing');
+                    });
+                }
             };
 
             // タブ切り替えの処理
