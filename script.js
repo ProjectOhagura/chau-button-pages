@@ -36,13 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // ラジオボタンのラベルをクリック可能に
         const label = document.querySelector(`label[for="${radio.id}"]`);
-        label.addEventListener('touchend', function(e) {
+        label.addEventListener('click', function(e) {
             if (radio.checked) {
-                e.preventDefault();
-                globalVolume = parseFloat(radio.value);
+                // 既に選択されているボタンを再クリックした場合
+                e.preventDefault(); // デフォルトの動作を防ぐ
+                globalVolume = parseFloat(radio.value); // 現在の音量を再度設定（視覚フィードバックを維持）
                 updateAllAudioVolumes(globalVolume);
-            } else {
-                radio.dispatchEvent(new Event('change')); // 選択されていない場合はchangeイベントをトリガー
+                volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
+                
             }
         });
     });
