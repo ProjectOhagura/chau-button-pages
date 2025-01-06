@@ -4,82 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingIndicator.className = 'loading';
     document.body.appendChild(loadingIndicator);
 
-    // 音量スイッチの設定
-    let globalVolume = 0.3; // 初期音量は小（30%）
-    const volumeSlider = document.getElementById('volume-slider');
-    const volumeRadios = document.querySelectorAll('.volume-switch input[type="radio"]');
+    
 
-    document.querySelectorAll('.volume-switch input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            globalVolume = parseFloat(this.value);
-            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
-            updateAllAudioVolumes(globalVolume);
-        });
-    });
-
-    // 全ての音源の音量を更新する関数
-    const updateAllAudioVolumes = (volume) => {
-        document.querySelectorAll('audio').forEach(audio => {
-            audio.volume = volume;
-        });
-    };
-
-    // スライダーの初期値を設定
-    volumeSlider.value = globalVolume;
-    volumeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            globalVolume = parseFloat(this.value);
-            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
-            updateAllAudioVolumes(globalVolume);
-            updateVisualFeedback(); // ラジオボタンの視覚フィードバックを更新
-        });
-
-        // ラジオボタンのラベルをクリック可能に
-        const label = document.querySelector(`label[for="${radio.id}"]`);
-        label.addEventListener('click', function(e) {
-            if (radio.checked) {
-                // 既に選択されているボタンを再クリックした場合
-                e.preventDefault(); // デフォルトの動作を防ぐ
-                globalVolume = parseFloat(radio.value); // 現在の音量を再度設定（視覚フィードバックを維持）
-                updateAllAudioVolumes(globalVolume);
-                volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
-                
-            }
-        });
-    });
-
-    document.querySelectorAll('.volume-switch input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            globalVolume = parseFloat(this.value);
-            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
-            updateAllAudioVolumes(globalVolume);
-            updateVisualFeedback(); // ラジオボタンの視覚フィードバックを更新
-        });
-    });
-     
-    volumeSlider.addEventListener('input', (e) => {
-        globalVolume = parseFloat(e.target.value);
-        updateAllAudioVolumes(globalVolume);
-        updateVisualFeedback(); // スライダーの値が変わったら視覚フィードバックを更新
-    });
-
-    // 初期設定
-    updateAllAudioVolumes(globalVolume);
-    updateVisualFeedback();
-
-    function updateVisualFeedback() {
-        if (globalVolume <= 0.4) { // 小までの範囲
-            document.getElementById('volume-low').checked = true;
-        } else if (globalVolume <= 0.7) { // 中までの範囲
-            document.getElementById('volume-medium').checked = true;
-        } else { // 大の範囲
-            document.getElementById('volume-high').checked = true;
-        }
-        
-    }
-
-
-
+    // グローバル音量を管理する変数
+    let globalVolume = 1; // 初期値は最大音量
 
     fetch('voice-data.json')
         .then(response => {
