@@ -4,6 +4,83 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingIndicator.className = 'loading';
     document.body.appendChild(loadingIndicator);
 
+    // 音量スイッチの設定
+    let globalVolume = 0.3; // 初期音量は小（30%）
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeRadios = document.querySelectorAll('.volume-switch input[type="radio"]');
+
+    document.querySelectorAll('.volume-switch input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            globalVolume = parseFloat(this.value);
+            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
+            updateAllAudioVolumes(globalVolume);
+        });
+    });
+
+    // 全ての音源の音量を更新する関数
+    const updateAllAudioVolumes = (volume) => {
+        document.querySelectorAll('audio').forEach(audio => {
+            audio.volume = volume;
+        });
+    };
+
+    // スライダーの初期値を設定
+    volumeSlider.value = globalVolume;
+    volumeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            globalVolume = parseFloat(this.value);
+            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
+            updateAllAudioVolumes(globalVolume);
+            updateVisualFeedback(); // ラジオボタンの視覚フィードバックを更新
+        });
+
+        // ラジオボタンのラベルをクリック可能に
+        const label = document.querySelector(`label[for="${radio.id}"]`);
+        label.addEventListener('click', function(e) {
+            if (radio.checked) {
+                // 既に選択されているボタンを再クリックした場合
+                e.preventDefault(); // デフォルトの動作を防ぐ
+                globalVolume = parseFloat(radio.value); // 現在の音量を再度設定（視覚フィードバックを維持）
+                updateAllAudioVolumes(globalVolume);
+                volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
+                
+            }
+        });
+    });
+
+    document.querySelectorAll('.volume-switch input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            globalVolume = parseFloat(this.value);
+            volumeSlider.value = globalVolume; // スライダーの値をラジオボタンの値に設定
+            updateAllAudioVolumes(globalVolume);
+            updateVisualFeedback(); // ラジオボタンの視覚フィードバックを更新
+        });
+    });
+     
+    volumeSlider.addEventListener('input', (e) => {
+        globalVolume = parseFloat(e.target.value);
+        updateAllAudioVolumes(globalVolume);
+        updateVisualFeedback(); // スライダーの値が変わったら視覚フィードバックを更新
+    });
+
+    // 初期設定
+    updateAllAudioVolumes(globalVolume);
+    updateVisualFeedback();
+
+    function updateVisualFeedback() {
+        if (globalVolume <= 0.4) { // 小までの範囲
+            document.getElementById('volume-low').checked = true;
+        } else if (globalVolume <= 0.7) { // 中までの範囲
+            document.getElementById('volume-medium').checked = true;
+        } else { // 大の範囲
+            document.getElementById('volume-high').checked = true;
+        }
+        
+    }
+
+
+
+
     fetch('voice-data.json')
         .then(response => {
             if (!response.ok) throw new Error('データの読み込みに失敗しました');
@@ -110,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const recommendedElement = document.createElement('div');
             recommendedElement.className = 'highlighted-recommendation';
             recommendedElement.innerHTML = `
-                <h2>オススメ！！一般抽選 2025/1/6 6:00 から！</h2>
+                <h2>オススメ！！　池袋HUMAXシネマズ 2025/2/15（土） 開催！　A席先着順販売中(S席完売済)</h2>
                 <a href="https://yukitochau-firststep.studio.site/" target="_blank">（特設サイト）個人VTuber雪兎ちゃう1stオフラインイベント「First Step in the CINEMA」</a>
                 <a href="https://x.com/hashtag/%E5%8A%87%E5%A0%B4%E7%89%88%E9%9B%AA%E5%85%8E%E3%81%A1%E3%82%83%E3%81%86" target="_blank">ハッシュタグ『#劇場版雪兎ちゃう』</a>
             `;
@@ -137,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ちゃうメーカータブの内容をセットアップ
             const asobiListContainer = document.getElementById('asobi-list');
             asobiListContainer.innerHTML = '<h1>ちゃうメーカー</h1>';
-
+ 
             // くじボタン1: ランダムに3つの音源を選択
             const randomSelectButton = document.createElement('button');
             randomSelectButton.textContent = '3種ランダム';
@@ -183,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 currentVoiceItem.audio.pause(); // 異なる音源の場合は停止
                             }
                             const audio = new Audio(audioFile);
+                            audio.volume = globalVolume; // ここで音量を設定
                             audio.play().catch(e => console.error('再生エラー:', e));
                             currentVoiceItem.audio = audio;
                             
@@ -301,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         button.audio.pause(); // 既存の再生を停止
                     }
                     const audio = new Audio(item.file);
+                    audio.volume = globalVolume; // ここで音量を設定
                     audio.play().catch(e => console.error('再生エラー:', e));
                     
                     // 再生中の音源をボタンに関連付け
@@ -329,12 +408,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 同じ音源なら停止して再度再生
                     element.audio.pause();
                     element.audio.currentTime = 0;
+                    audio.volume = globalVolume; // ここで音量を設定
                     element.audio.play().catch(e => console.error('再生エラー:', e));
                 } else {
                     // 異なる音源または再生中の音源がない場合、新しい再生を開始
                     if (element.audio) {
                         element.audio.pause(); // 既存の再生を停止
                     }
+                    audio.volume = globalVolume; // ここで音量を設定
                     audio.play().catch(e => console.error('再生エラー:', e));
                     
                     element.audio = audio;
