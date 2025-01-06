@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f5f5f5;
-    padding-top: 150px; /* ヘッダーとタブの高さ分 */
+    padding-top: 185px; /* ヘッダーとタブの高さ分 */
 }
 
 header {
@@ -11,22 +11,88 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #f8e7e7; /* タブの背景色と同じに */
-    z-index: 1001; /* タブコンテナよりも上に */
+    background-color: #f8e7e7;
+    z-index: 1001;
     padding: 15px 20px;
 }
 
+.header-content {
+    display: flex;
+    align-items: center;
+}
 
 .site-title {
     font-size: 24px;
     font-weight: bold;
-    color: #e74c8c; /* ピンク色 */
+    color: #e74c8c;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    margin-right: 20px; /* 音量スライダーとの間隔 */
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+}
+
+.volume-label {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #e74c8c;
+}
+
+.volume-switch {
+    display: flex;
+    gap: 10px;
+}
+
+.volume-switch input[type="radio"] {
+    display: none;
+}
+
+.volume-switch label {
+    background-color: #fff;
+    border: 2px solid #e74c8c;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #e74c8c;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.volume-switch label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50px;
+    width: 50px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: skewX(-45deg);
+    transition: left 0.3s ease;
+}
+
+.volume-switch label:hover::before {
+    left: 100%;
+}
+
+.volume-switch label:hover {
+    /* background-color: #ff1493; ボタンのホバー色と統一 */
+    transform: translateY(-2px); /* ボタンのホバー時のアニメーションと統一 */
+}
+.volume-switch input[type="radio"]:checked + label {
+    background-color: #e74c8c;
+    color: #fff;
+    border-color: #e74c8c;
+    transform: scale(1.05); /* 選択時に少し大きく */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .tab-container {
     position: fixed;
-    top: 60px;
+    top: 100px;
     left: 0;
     width: 100%;
     display: flex;
@@ -125,6 +191,7 @@ header {
     min-height: 40px; /* 最小高さを設定 */
     max-height: 50px; 
     box-sizing: border-box; /* パディングがサイズに影響を与えないように */
+    transition: transform 0.1s ease, background-color 0.3s ease;
 }
 
 .button:hover {
@@ -374,6 +441,20 @@ header {
     }
 }
 
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .volume-control {
+        margin-top: 10px;
+    }
+}
+
+
 /* ジャンル別の全体レイアウト */
 #genre-list {
     padding: 20px;
@@ -581,4 +662,65 @@ header {
     color: #002171; /* より濃い青 */
     transform: translateY(-5px); /* 浮き上がる効果 */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+.button:active {
+    transform: scale(0.95); /* クリックしたときにボタンが少し小さくなる */
+    background-color: #ff1493; /* クリック時の一時的な背景色変更 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* クリック時の影の強調 */
+}
+
+/* ちゃうメーカーのボタンも同様の効果 */
+#asobi-list button:active {
+    transform: scale(0.95);
+    background-color: #ff1493;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ジャンルボタンも同様の効果 */
+.genre-button:active {
+    transform: scale(0.95);
+    background-color: #a5d6a7; /* ジャンルボタン用に調整 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.volume-slider-wrapper {
+    width: 100%;
+    max-width: 200px;
+}
+
+#volume-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e74c8c;
+    height: 5px;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+#volume-slider:hover {
+    opacity: 1;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border: 2px solid #ff69b4;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border: 2px solid #ff69b4;
+    border-radius: 50%;
+    cursor: pointer;
 }
