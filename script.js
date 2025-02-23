@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const recommendedElement = document.createElement('div');
             recommendedElement.className = 'highlighted-recommendation';
             recommendedElement.innerHTML = `
-                <h2>オススメ！！　1stオフラインイベント　配信チケット販売中！！ 02/22 (土) 20:00まで！</h2>
+                <h2>オススメ！！　1stオフラインイベント　グッズ販売中！！ 数量限定！</h2>
                 <a href="https://yukitochau-firststep.studio.site/" target="_blank">（特設サイト）個人VTuber雪兎ちゃう1stオフラインイベント「First Step in the CINEMA」</a>
                 <a href="https://www.youtube.com/watch?v=VFDXWfYehj0" target="_blank">YouTube チラ見せ枠</a>
                 <a href="https://x.com/hashtag/%E5%8A%87%E5%A0%B4%E7%89%88%E9%9B%AA%E5%85%8E%E3%81%A1%E3%82%83%E3%81%86" target="_blank">ハッシュタグ『#劇場版雪兎ちゃう』</a>
